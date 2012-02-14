@@ -13,7 +13,7 @@ module("menubar.utils")
 
 terminal = 'xterm'
 
-default_icon = ""
+default_icon = nil
 
 icon_theme = nil
 
@@ -42,7 +42,7 @@ local function file_exists(filename)
 end
 
 function lookup_icon(icon_file)
-   if not icon_file then
+   if not icon_file or icon_file == "" then
       return default_icon
    end
    if icon_file:sub(1, 1) == '/' and (icon_file:find('.+%.png') or icon_file:find('.+%.xpm')) then

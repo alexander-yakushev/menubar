@@ -15,7 +15,6 @@ local prompt = require("menubar.prompt")
 local awful = require("awful")
 local common = require("awful.widget.common")
 local tonumber = tonumber
-local io = io
 local string = string
 local mouse = mouse
 local math = math
@@ -87,30 +86,7 @@ local function initialize(scr)
 end
 
 function refresh(use_cache)
-   if not use_cache then
-      menu_gen.generate()
-   end
-
-   if not awful.util.file_readable(menu_gen.output_filename) then
-      error("Can't read generated file, menu_gen is broken")
-   else
-      categories = {}
-      f = io.open(menu_gen.output_filename)
-      f:read("*line")
-      menu_entries = {}
-      while true do
-         local name = f:read("*line")
-         if not name or name == menu_gen.eof then
-            break
-         end
-         local cmdline = f:read("*line")
-         local icon_path = f:read("*line")
-         local category = tonumber(f:read("*line"))
-         table.insert(menu_entries, { name = name, cmdline = cmdline,
-                                      icon = icon_path ~= "" and icon_path or nil,
-                                      category = category })
-      end
-   end
+   menu_entries = menu_gen.generate()
 end
 
 function show(scr)
