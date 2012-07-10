@@ -7,6 +7,7 @@
 local io = io
 local table = table
 local ipairs = ipairs
+local type = type
 local string = string
 
 module("menubar.utils")
@@ -44,6 +45,9 @@ end
 function lookup_icon(icon_file)
    if not icon_file then
       return default_icon
+   end
+   if (type(icon_file)=="table") then
+       icon_file = icon_file[1]
    end
    if icon_file:sub(1, 1) == '/' and (icon_file:find('.+%.png') or icon_file:find('.+%.xpm')) then
       -- icons with absolute path and supported (AFAICT) formats
@@ -97,7 +101,17 @@ function parse(file, requested_icon_sizes)
    local program = { show = true, file = file }
    for line in io.lines(file) do
       for key, value in line:gmatch("(%w+)=(.+)") do
-         program[key] = value
+         if program[key] then
+             -- already exists, so expand it to a table
+             if (type(program[key])~="table") then
+                 local tmp = program[key]
+                 program[key] = {}
+                 table.insert(program[key],tmp)
+             end
+             table.insert(program[key],value)
+         else
+             program[key] = value
+         end
       end
    end
 
@@ -126,18 +140,26 @@ function parse(file, requested_icon_sizes)
    end
 
    if program.Exec then
-      local cmdline = program.Exec:gsub('%%c', program.Name)
-      cmdline = cmdline:gsub('%%[fuFU]', '')
-      cmdline = cmdline:gsub('%%k', program.file)
-      if program.icon_path then
-         cmdline = cmdline:gsub('%%i', '--icon ' .. program.icon_path)
-      else
-         cmdline = cmdline:gsub('%%i', '')
+      if (type(program.Exec)~="table") then
+          local tmp = program.Exec
+          program.Exec = {}
+          table.insert(program.Exec,tmp)
       end
-      if program.Terminal == "true" then
-         cmdline = terminal .. ' -e ' .. cmdline
+      program.cmdline = {}
+      for _,prExec in ipairs(program.Exec) do
+          local cmdline = prExec:gsub('%%c', program.Name)
+          cmdline = cmdline:gsub('%%[fuFU]', '')
+          cmdline = cmdline:gsub('%%k', program.file)
+          if program.icon_path then
+             cmdline = cmdline:gsub('%%i', '--icon ' .. program.icon_path)
+          else
+             cmdline = cmdline:gsub('%%i', '')
+          end
+          if program.Terminal == "true" then
+             cmdline = terminal .. ' -e ' .. cmdline
+          end
+          table.insert(program.cmdline,cmdline)
       end
-      program.cmdline = cmdline
    end
 
    return program

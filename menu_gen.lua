@@ -6,6 +6,8 @@
 local utils = require("menubar.utils")
 local io = io
 local ipairs = ipairs
+local type=type
+local table=table
 local awful = awful
 local string = string
 
@@ -37,6 +39,14 @@ all_categories = {
    { app_type = "Utility", name = "Accessories",
      icon_name = "applications-accessories.png", use = true }
 }
+
+function convert_to_table(totable)
+   if (type(totable)~="table") then
+       return {totable}
+   else
+       return totable
+   end
+end
 
 function lookup_category_icons()
    for i, v in ipairs(all_categories) do
@@ -91,11 +101,15 @@ function generate()
                   end
                end
                if target_category then
-                  f:write(
-                     string.format("%s\n%s\n%s\n%s\n",
-                                   esc_q(program.Name), esc_q(program.cmdline),
-                                   utils.lookup_icon(esc_q(program.icon_path)),
-                                   target_category))
+                  program.cmdline = convert_to_table(program.cmdline)
+                  program.Name = convert_to_table(program.Name)
+                  for i,cmdline in ipairs(program.cmdline) do
+                      f:write(
+                         string.format("%s\n%s\n%s\n%s\n",
+                                       esc_q(program.Name[i]), esc_q(cmdline),
+                                       utils.lookup_icon(esc_q(program.icon_path)),
+                                       target_category))
+                   end
                end
             end
          end
