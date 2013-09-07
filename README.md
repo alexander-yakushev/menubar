@@ -1,6 +1,8 @@
 ## Note ##
 
-If you use the latest Awesome built from git since 09.03.2012 then you already have Menubar. Press Modkey-P to see it.
+If you use the latest Awesome 3.5 or newer, then you already have Menubar. Press Modkey-P to see it.
+
+This version is for Awesome 3.4.x.
 
 ## What ##
 
