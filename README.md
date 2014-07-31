@@ -1,6 +1,6 @@
 ## Note ##
 
-This is the adjusted module for the latest git master version of Awesome.
+This branch is now deprecated. Menubar was pushed to Awesome repository on 09.03.2012 so it now comes with vanilla Awesome. Press Modkey-P to see it.
 
 ## What ##
 
